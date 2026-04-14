@@ -467,3 +467,4 @@ def razorpay_webhook(request):
     tx.save(update_fields=["payment_id", "signature", "status", "error_message", "updated_at"])
     logger.info("Webhook processed event=%s order_id=%s status=%s", event_name, order_id, tx.status)
     return JsonResponse({"status": "ok"}, status=200)
+print("hello"
