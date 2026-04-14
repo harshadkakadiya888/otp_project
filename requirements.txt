@@ -1,0 +1,11 @@
+django
+djangorestframework
+django-filter
+requests
+razorpay
+python-dotenv
+psycopg2-binary
+celery
+redis
+gunicorn
+Pillow

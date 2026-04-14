@@ -1,0 +1,9 @@
+<h2>Payment Result</h2>
+
+{% if status == "success" %}
+  <p style="color: green; font-weight: bold;">{{ message }}</p>
+{% else %}
+  <p style="color: red; font-weight: bold;">{{ message }}</p>
+{% endif %}
+
+<p><a href="{% url 'user_dashboard' %}">Back to Dashboard</a></p>

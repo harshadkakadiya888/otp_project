@@ -1,0 +1,41 @@
+<h2>Razorpay Checkout</h2>
+<p>Amount: Rs. {{ amount_rupees }}</p>
+
+<button id="pay-btn">Pay Now</button>
+
+<form id="verify-form" method="post" action="{% url 'razorpay_verify' %}">
+  {% csrf_token %}
+  <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+  <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+  <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  var options = {
+    "key": "{{ razorpay_key_id }}",
+    "amount": "{{ amount_paise }}",
+    "currency": "{{ currency }}",
+    "name": "OTP Project",
+    "description": "Course payment",
+    "order_id": "{{ order_id }}",
+    "handler": function (response){
+      document.getElementById("razorpay_payment_id").value = response.razorpay_payment_id;
+      document.getElementById("razorpay_order_id").value = response.razorpay_order_id;
+      document.getElementById("razorpay_signature").value = response.razorpay_signature;
+      document.getElementById("verify-form").submit();
+    },
+    "prefill": {
+      "email": "{{ email }}"
+    },
+    "theme": {
+      "color": "#3399cc"
+    }
+  };
+
+  var rzp1 = new Razorpay(options);
+  document.getElementById("pay-btn").onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+  };
+</script>

@@ -1,0 +1,15 @@
+<h2>Student Course Summary</h2>
+
+<table border="1">
+    <tr>
+        <th>Course</th>
+        <th>Total Students</th>
+    </tr>
+
+    {% for item in data %}
+    <tr>
+        <td>{{ item.course }}</td>
+        <td>{{ item.total }}</td>
+    </tr>
+    {% endfor %}
+</table>
