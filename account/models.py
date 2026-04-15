@@ -4,7 +4,6 @@ from django.db import models
 from .file_utils import optimize_student_image
 from .validators import validate_student_image, validate_student_pdf
 
-
 class CustomUser(models.Model):
     ROLE_CHOICES = (
         ('admin', 'Admin'),

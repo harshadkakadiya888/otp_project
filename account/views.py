@@ -3,10 +3,11 @@ import json
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.db.models import Count
+from django.db import transaction
 from django.views.decorators.csrf import csrf_exempt
 
 from otp_project import settings
-from .models import Student, PaymentTransaction, Notification
+from .models import Student, Course, PaymentTransaction, Notification
 from .forms import StudentForm
 
 # DRF Imports
@@ -175,17 +176,59 @@ def student_form(request):
 
     if request.method == 'POST':
         form = StudentForm(request.POST, request.FILES)
+        uploaded_photo = request.FILES.get("student_photo")
+        uploaded_document = request.FILES.get("document")
+        print("DEBUG request.FILES:", request.FILES)
+        print("DEBUG request.FILES.get('student_photo'):", uploaded_photo)
+        logger.info("Student upload request.FILES keys=%s", list(request.FILES.keys()))
+        if uploaded_photo:
+            logger.info(
+                "Student photo received name=%s size=%s content_type=%s",
+                uploaded_photo.name,
+                uploaded_photo.size,
+                getattr(uploaded_photo, "content_type", "unknown"),
+            )
+        else:
+            logger.warning("Student form submitted without student_photo in request.FILES")
 
         if form.is_valid():
-            form.save()
+            selected_course = form.cleaned_data.get("course")
+            course_name = (getattr(selected_course, "name", "") or "").strip() or "General"
+
+            # Avoid get_or_create() here because legacy duplicate course names may exist.
+            # Reuse the oldest matching row; create only when no match is found.
+            course = Course.objects.filter(name=course_name).order_by("id").first()
+            if not course:
+                course = Course.objects.create(name=course_name)
+
+            with transaction.atomic():
+                student = Student(
+                    name=form.cleaned_data["name"],
+                    email=form.cleaned_data["email"],
+                    mobile=form.cleaned_data["mobile"],
+                    course=course,
+                )
+                if uploaded_photo:
+                    student.student_photo = uploaded_photo
+                if uploaded_document:
+                    student.document = uploaded_document
+                student.save()
+            if student.student_photo:
+                logger.info(
+                    "Student saved with photo storage_key=%s email=%s storage=%s",
+                    student.student_photo.name,
+                    student.email,
+                    student.student_photo.storage.__class__.__name__,
+                )
+            else:
+                logger.warning("Student saved without photo email=%s", student.email)
             return render(request, 'success.html')
         else:
-            print(form.errors)  # 👈 debug
+            logger.warning("Student form validation failed errors=%s", form.errors)
 
     else:
         form = StudentForm(initial={'email': email})
 
-    return render(request, 'student_form.html', {'form': form})
     return render(request, 'student_form.html', {'form': form})
 
 
