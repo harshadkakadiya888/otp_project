@@ -1,35 +1,142 @@
-<h2>Admin dashboard</h2>
-<p>You are logged in as admin.</p>
-<ul>
-  <li><a href="{% url 'student_form' %}">Student form</a></li>
-  <li><a href="{% url 'student_summary' %}">Course summary</a></li>
-  <li><a href="{% url 'student-api' %}">Students API (JSON)</a></li>
-  <li><a href="{% url 'razorpay_checkout' %}?amount=499">Pay with Razorpay</a></li>
-</ul>
-<h3>Live Notifications</h3>
-<ul id="notification-list"></ul>
-<p><a href="{% url 'logout' %}">Logout</a></p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .container {
+            width: 800px;
+            margin: 40px auto;
+        }
+
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .links a {
+            display: block;
+            padding: 10px;
+            margin: 8px 0;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .links a:hover {
+            background: #45a049;
+        }
+
+        .notifications ul {
+            padding-left: 20px;
+        }
+
+        .notifications li {
+            margin-bottom: 8px;
+        }
+
+        .logout {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .logout a {
+            color: red;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .logout a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="card">
+        <h2>Admin Dashboard</h2>
+        <p class="subtitle">You are logged in as <b>admin</b></p>
+    </div>
+
+    <!-- Links -->
+    <div class="card links">
+        <a href="{% url 'student_form' %}">📄 Student Form</a>
+        <a href="{% url 'student_summary' %}">📚 Course Summary</a>
+        <a href="{% url 'student-api' %}">📊 Students API (JSON)</a>
+        <a href="{% url 'razorpay_checkout' %}?amount=499">💳 Pay with Razorpay</a>
+    </div>
+
+    <!-- Notifications -->
+    <div class="card notifications">
+        <h3>🔔 Live Notifications</h3>
+        <ul id="notification-list"></ul>
+    </div>
+
+    <!-- Logout -->
+    <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+
+</div>
 
 <script>
   let lastNotificationId = 0;
   const listEl = document.getElementById("notification-list");
 
   async function pollNotifications() {
-    try {
-      const res = await fetch(`/notifications/poll/?last_id=${lastNotificationId}`);
-      if (!res.ok) return;
-      const data = await res.json();
-      (data.notifications || []).forEach((item) => {
-        const li = document.createElement("li");
-        li.textContent = `[${item.type}] ${item.message}`;
-        listEl.prepend(li);
-        lastNotificationId = Math.max(lastNotificationId, item.id);
-      });
-    } catch (e) {
-      console.error("Notification polling failed", e);
-    }
-  }
+  try {
+    const res = await fetch(`/notifications/poll/?last_id=${lastNotificationId}`);
+    if (!res.ok) return;
+    const data = await res.json();
 
+    (data.notifications || []).forEach((item) => {
+      const li = document.createElement("li");
+
+      const time = new Date(item.created_at).toLocaleString();
+
+      li.innerHTML = `
+        [${item.type}] ${item.message}
+        <br>
+        <small style="color: gray;">${time}</small>
+      `;
+
+      listEl.prepend(li);
+      lastNotificationId = Math.max(lastNotificationId, item.id);
+    });
+
+  } catch (e) {
+    console.error("Notification polling failed", e);
+  }
+}
   pollNotifications();
   setInterval(pollNotifications, 5000);
 </script>
+
+</body>
+</html>

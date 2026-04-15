@@ -76,7 +76,7 @@ def student_summary(request):
             request.session.get("role"),
         )
         return HttpResponse("Access Denied ❌")
-    data = Student.objects.values('course').annotate(total=Count('id'))
+    data = Student.objects.values('course__name').annotate(total=Count('id'))
     return render(request, 'summary.html', {'data': data})
 
 
@@ -85,16 +85,28 @@ def student_summary(request):
 @rate_limit(max_requests=5, window_seconds=300, key_prefix="register")
 def send_otp(request):
     if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        role = request.POST.get('role') or 'user'
+
         result = register_user(
-            username=request.POST.get('username'),
-            email=request.POST.get('email'),
-            password=request.POST.get('password'),
-            role=request.POST.get('role') or 'user',
+            username=username,
+            email=email,
+            password=password,
+            role=role,
         )
+
         if not result["ok"]:
-            return HttpResponse(result["error"], status=result.get("status", 400))
+            return render(request, 'send_otp.html', {
+                "error": result["error"],
+                "username": username,
+                "email": email,
+                "role": role,
+            })
 
         return redirect('login')
+
     return render(request, 'send_otp.html')
 
 
@@ -157,22 +169,23 @@ def reset_password(request):
 
 def student_form(request):
     if not request.session.get('email'):
-        security_logger.warning(
-            "Student form access denied (not logged in) ip=%s",
-            request.META.get("REMOTE_ADDR", "unknown"),
-        )
         return redirect('login')
 
     email = request.session.get('email')
 
     if request.method == 'POST':
         form = StudentForm(request.POST, request.FILES)
+
         if form.is_valid():
             form.save()
             return render(request, 'success.html')
+        else:
+            print(form.errors)  # 👈 debug
+
     else:
         form = StudentForm(initial={'email': email})
 
+    return render(request, 'student_form.html', {'form': form})
     return render(request, 'student_form.html', {'form': form})
 
 
@@ -466,5 +479,7 @@ def razorpay_webhook(request):
 
     tx.save(update_fields=["payment_id", "signature", "status", "error_message", "updated_at"])
     logger.info("Webhook processed event=%s order_id=%s status=%s", event_name, order_id, tx.status)
+
     return JsonResponse({"status": "ok"}, status=200)
-print("hello"
+
+

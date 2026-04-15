@@ -13,7 +13,7 @@ from django.utils import timezone
 
 from otp_project.celery import app
 
-from .models import OTP, Student
+from .models import OTP, Notification, Student
 from .services.notification_service import send_plain_email
 
 logger = logging.getLogger("account")
@@ -80,3 +80,20 @@ def send_daily_student_reminders():
         len(seen),
     )
     return {"sent": sent, "failed": failed, "total": len(seen)}
+
+@app.task(name="account.tasks.delete_old_notifications")
+def delete_old_notifications():
+    cutoff = timezone.now() - timedelta(minutes=2)
+
+    delete_result = Notification.objects.filter(
+        created_at__lt=cutoff
+    ).delete()
+
+    deleted_count = delete_result[0] if delete_result else 0
+
+    logger.info(
+        "delete_old_notifications: deleted %s notifications older than 2 minutes",
+        deleted_count
+    )
+
+    return {"deleted": deleted_count}

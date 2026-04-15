@@ -20,4 +20,5 @@ urlpatterns = [
     path('notifications/poll/', views.notification_poll, name='notification_poll'),
     path('api/payment-status/<str:order_id>/', views.payment_status_api, name='payment_status_api'),
     path('send_otp/', views.send_otp, name='send_otp'),
+
 ]

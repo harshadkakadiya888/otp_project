@@ -228,9 +228,9 @@ DAILY_REMINDER_HOUR = int(os.getenv('DAILY_REMINDER_HOUR', '9'))
 DAILY_REMINDER_MINUTE = int(os.getenv('DAILY_REMINDER_MINUTE', '0'))
 
 CELERY_BEAT_SCHEDULE = {
-    'cleanup-expired-otps': {
-        'task': 'account.tasks.cleanup_expired_otps',
-        'schedule': crontab(minute='*/5'),
+    'cleanup_notifications': {
+        'task': 'account.tasks.delete_old_notifications',
+        'schedule': crontab(minute='*/1'),  # testing mate fast
     },
     'daily-student-reminder': {
         'task': 'account.tasks.send_daily_student_reminders',
@@ -260,10 +260,11 @@ LOGGING = {
         },
         'app_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': LOG_DIR / 'application.log',
-            'maxBytes': 5 * 1024 * 1024,
+            'filename': str(LOG_DIR / 'application.log'),
+            'maxBytes': 100 * 1024,   # 100 KB for testing; increase as needed (e.g., 5 * 1024 * 1024 for 5 MB)
             'backupCount': 5,
             'formatter': 'verbose',
+            'level': 'INFO',
         },
         'error_file': {
             'class': 'logging.handlers.RotatingFileHandler',

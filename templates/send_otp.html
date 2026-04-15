@@ -1,27 +1,72 @@
-<h2>Register</h2>
+<style>
+.container {
+    width: 350px;
+    margin: 50px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-<form method="post">
-  {% csrf_token %}
-    <h1>Register</h1>
-  <label>Username:</label>
-  <input type="text" name="username"><br><br>
+/* 👇 બધા fields માટે spacing */
+.container input,
+.container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px; /* 👈 gap */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
 
-  <label>Email:</label>
-  <input type="email" name="email"><br><br>
+/* 👇 button full width */
+.container button {
+    width: 100%;
+    padding: 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
 
-  <label>Password:</label>
-  <input type="password" name="password"><br><br>
+.container button:hover {
+    background: #45a049;
+}
 
-    <p>Select Role:</p>
-<select name="role">
-    <option value="user">User</option>
-    <option value="admin">Admin</option>
-</select>
+.links {
+    text-align: center;
+    margin-top: 15px;
+}
 
-  <button type="submit">Submit</button>
+.container h2 {
+    text-align: center;
+}
+</style>
 
-</form>
+<div class="container">
+    <h2>Register</h2>
 
-<br>
+    <form method="POST">
+        {% csrf_token %}
 
-<a href="/login/">Login</a>
+        <input type="text" name="username" placeholder="Username" required>
+
+        <input type="email" name="email" placeholder="Email" required>
+
+        <input type="password" name="password" placeholder="Password" required>
+
+        <select name="role" required>
+            <option value="">Select Role</option>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+        </select>
+
+        <!-- 👇 button હવે નીચે -->
+        <button type="submit">Register</button>
+
+        <div class="links">
+            Already registered? 
+            <a href="{% url 'login' %}" style="color:#4CAF50;">Login</a>
+        </div>
+    </form>
+</div>

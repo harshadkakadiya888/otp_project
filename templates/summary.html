@@ -1,14 +1,30 @@
-<h2>Student Course Summary</h2>
+<style id="7h3k2a">
+table {
+  border-collapse: collapse;
+  width: 50%;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+th {
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
 
-<table border="1">
-    <tr>
+<h2 style="text-align: center; margin-top: 40px;">
+    Student Course Summary
+</h2>
+<table style="margin-top: 80px; margin-left: auto; margin-right: auto;"><tr>
         <th>Course</th>
         <th>Total Students</th>
     </tr>
 
     {% for item in data %}
     <tr>
-        <td>{{ item.course }}</td>
+        <td>{{ item.course__name }}</td>
         <td>{{ item.total }}</td>
     </tr>
     {% endfor %}
