@@ -1,1 +1,72 @@
-<h2>Form Submitted Successfully ✅</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Success</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #dfe9f3, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+
+        .icon {
+            font-size: 50px;
+            color: green;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: gray;
+            font-size: 14px;
+        }
+
+        .btn {
+            margin-top: 25px;
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #218838, #1e7e34);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <div class="icon">✅</div>
+    <h1>Form Submitted Successfully</h1>
+    <p>Your data has been saved successfully.</p>
+
+    <a href="{% url 'student_form' %}" class="btn">+ Add New Form</a>
+</div>
+
+</body>
+</html>

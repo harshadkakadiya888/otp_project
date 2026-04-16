@@ -190,7 +190,6 @@ def student_form(request):
             )
         else:
             logger.warning("Student form submitted without student_photo in request.FILES")
-
         if form.is_valid():
             selected_course = form.cleaned_data.get("course")
             course_name = (getattr(selected_course, "name", "") or "").strip() or "General"
@@ -225,7 +224,6 @@ def student_form(request):
             return render(request, 'success.html')
         else:
             logger.warning("Student form validation failed errors=%s", form.errors)
-
     else:
         form = StudentForm(initial={'email': email})
 
